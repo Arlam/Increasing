@@ -1,50 +1,54 @@
 package aa.task.increasing;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 public class Filter {
     public List<Integer> getMaxLengthIncreasingList(List<Integer> initialList) {
-        Map<Integer, Set<Integer>> relations = new HashMap<>();
-        for (int index = 0; index < initialList.size(); index++) {
-            addRelations(relations, initialList, index);
-            relations.put(index, new HashSet<>());
+        List<Integer> result = new LinkedList<>();
+        List<Integer> chainsLength = new ArrayList<>(initialList.size());
+        for (Integer valueId = 0; valueId < initialList.size(); valueId++) {
+            Integer length = getMaxLength(chainsLength, initialList, valueId) + 1;
+            chainsLength.add(valueId, length);
         }
-        TreeSet<Integer> theLongestChain = getLongerChain(relations, relations.keySet());
-        List<Integer> result = theLongestChain.stream().map(initialList::get).collect(Collectors.toList());
+
+        int size = chainsLength.size();
+        Integer maxValue = null;
+        while (size > 0) {
+            int lastElementId = getLastElementId(chainsLength, initialList, maxValue, size);
+            if (lastElementId >= 0) {
+                Integer element = initialList.get(lastElementId);
+                result.add(0, element);
+                maxValue = element;
+            }
+            size = lastElementId;
+        }
         return result;
     }
 
-    private TreeSet<Integer> getLongerChain(Map<Integer, Set<Integer>> relations, Set<Integer> possibleNextElementIds) {
-        final TreeSet<Integer> result = new TreeSet<>();
-        if (possibleNextElementIds.isEmpty()) {
-            return result;
-        }
-        int max = -1;
-        Integer nextValueIndex = null;
-        for (Integer index : possibleNextElementIds) {
-            final int size = relations.get(index).size();
-            if (max < size) {
-                max = size;
-                nextValueIndex = index;
+    private int getLastElementId(List<Integer> chainsLength, List<Integer> initialList, Integer maxValue, int size) {
+        int maxSize = 0;
+        int id = -1;
+        for (int i = size - 1; i >= 0; i--) {
+            int value = initialList.get(i);
+            Integer length = chainsLength.get(i);
+            if (maxSize < length && (maxValue == null || value <= maxValue)) {
+                maxSize = length;
+                id = i;
             }
         }
-        result.add(nextValueIndex);
-        result.addAll(getLongerChain(relations, relations.get(nextValueIndex)));
-        return result;
+        return id;
     }
 
-    private void addRelations(Map<Integer, Set<Integer>> relations, List<Integer> list, Integer elementNumber) {
-        final Integer currentElement = list.get(elementNumber);
-        relations.keySet()
-                .stream()
-                .filter(index -> list.get(index) < currentElement)
-                .forEach(index -> relations.get(index).add(elementNumber)
-                );
+    private int getMaxLength(List<Integer> lengths, List<Integer> values, Integer valueId) {
+        int value = values.get(valueId);
+        int max = 0;
+        for (int i = 0; i < valueId; i++) {
+            if (lengths.get(i) > max && values.get(i) <= value) {
+                max = lengths.get(i);
+            }
+        }
+        return max;
     }
 }

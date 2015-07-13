@@ -37,16 +37,22 @@ public class FilterTest {
     public void testGetMaxLengthIncreasingList2() {
         final Integer[] inputArray = {4, 3, 2, 1};
         List<Integer> inputList = Arrays.asList(inputArray);
-        assertEquals(Arrays.asList(4), filter.getMaxLengthIncreasingList(inputList));
+        assertEquals(Arrays.asList(1), filter.getMaxLengthIncreasingList(inputList));
     }
 
     @Test
     public void testGetMaxLengthIncreasingList3() {
         final Integer[] inputArray = {4, 3, 2, 1, 5, 6, 4, 8};
         List<Integer> inputList = Arrays.asList(inputArray);
-        assertEquals(Arrays.asList(3, 5, 6, 8), filter.getMaxLengthIncreasingList(inputList));
+        assertEquals(Arrays.asList(1, 5, 6, 8), filter.getMaxLengthIncreasingList(inputList));
     }
 
+    @Test
+    public void testGetMaxLengthIncreasingList4() {
+        final Integer[] inputArray = {15, 9, 1, 18, 13, 1, 12, 2, 2, 10, 17, 8, 19, 5, 3, 5, 2, 6, 11, 15};
+        List<Integer> inputList = Arrays.asList(inputArray);
+        assertEquals(Arrays.asList(1, 1, 2, 2, 3, 5, 6, 11, 15), filter.getMaxLengthIncreasingList(inputList));
+    }
     @Test
     public void testLogSet() {
         List<Integer> inputList = new ArrayList<>();
@@ -63,6 +69,5 @@ public class FilterTest {
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         System.out.println("totalTime: " + totalTime + "; size=" + result.size());
-        System.out.println(result);
     }
 }
